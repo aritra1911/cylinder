@@ -7,8 +7,7 @@ cylinder: $(OBJ)
 	$(CXX) $(LIBS) -o $@ $^
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
+	$(CXX) $(CXXFLAGS) $(DEBUG) -c -o $@ $<
 
 clean:
 	$(RM) $(OBJ) cylinder

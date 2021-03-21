@@ -22,25 +22,51 @@ std::string tail(const std::string& s) {
     return "";
 }
 
-/* TODO: Return an integer based on success / failure */
-Schema parse(const std::string& sql_query) {
-    std::string query = sql_query;  // Create a copy so we don't modify the original one
+int SQL::parse(const std::string& _query) {
+    std::string query = _query;  // Create a copy so we don't modify the original one
 
+    /* TODO: SQL is case-insensitive */
     if (head(query) == "CREATE") {
         query = tail(query);  // Chop off head, we won't need that anymore!
+        this->statement = CREATE;
 
         if (head(query) == "SCHEMA") {
-            Schema new_schema(tail(query));
-            std::cout << "Schema created.\n";
-            return new_schema;
+            this->substatement = SCHEMA;
+            this->name = tail(query);
+                /* TODO: SQL statements may end with a semi-colon which is not a part of the name itself. */
 
         } else {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
-            return Schema("nul");  /* Failure */
+            return -1;
         }
-
     } else {
         std::cerr << "Couldn't parse query\n";
-        return Schema("nul");  /* Failure */
+        return -1;
+    }
+
+    return 0;
+}
+
+void SQL::execute(void) {
+    /* TODO: Quit bluffing */
+    switch (statement) {
+        case CREATE:
+            switch (substatement) {
+                case SCHEMA:
+                    std::cout << "Schema Name : \"" << name << "\"\n";
+                    break;
+
+                default:
+                    /* If the parse() works correctly, and provided no break statements were missed above, this case
+                     * should never be reached. */
+                    std::cerr << "You shouldn't be seeing this!\n";
+
+            }
+            break;
+
+        default:
+            /* If the parse() works correctly, and provided no break statements were missed above, this case should
+             * never be reached. */
+            std::cerr << "You shouldn't be seeing this!\n";
     }
 }
