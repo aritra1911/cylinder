@@ -6,6 +6,7 @@ const std::string PROMPT = "SQL> ";
 
 int main(void) {
     std::string query;
+    Schema* schema = nullptr;
     SQL sql;
 
     while (1) {
@@ -26,8 +27,11 @@ int main(void) {
         if (sql.parse(query) == -1)
             continue;  /* Bad query */
 
-        /* TODO: This will work on a particular schema, but should we mutate a global schema? */
-        sql.execute();
+        /* TODO: This works on a particular schema, but should we mutate a global schema? */
+        sql.execute(schema);
+
+        if (schema)
+            std::cout << schema->get_name() << std::endl;
     }
 
     return EXIT_SUCCESS;

@@ -30,7 +30,7 @@ struct SQL {
     std::string name;
 
     int parse(const std::string&);
-    void execute(void);
+    void execute(Schema*&);
 };
 
 /* After splitting the given string using the first encountered whitespace as a delimeter, the head() and tail()

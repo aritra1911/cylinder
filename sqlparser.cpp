@@ -35,6 +35,8 @@ int SQL::parse(const std::string& _query) {
             this->name = tail(query);
                 /* TODO: SQL statements may end with a semi-colon which is not a part of the name itself. */
 
+        //} else if (head(query) == "TABLE") {
+        //    /* TODO */
         } else {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;
@@ -47,13 +49,21 @@ int SQL::parse(const std::string& _query) {
     return 0;
 }
 
-void SQL::execute(void) {
-    /* TODO: Quit bluffing */
+void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
     switch (statement) {
         case CREATE:
             switch (substatement) {
                 case SCHEMA:
-                    std::cout << "Schema Name : \"" << name << "\"\n";
+                    if (schema)  /* Existing schema needs to be closed */
+                        delete schema;  /* TODO: Was changes in current schema saved? */
+
+                    schema = new Schema(name);
+                    if (schema->create() != -1)
+                        std::cout << "Schema created.\n";
+                    break;
+
+                case TABLE:
+                    /* TODO */
                     break;
 
                 default:
