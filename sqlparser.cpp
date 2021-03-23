@@ -78,11 +78,6 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
         case CREATE:
             switch (substatement) {
                 case SCHEMA:
-                    /* TODO: Move this to SELECT SCHEMA */
-                    //if (schema)  /* Existing schema needs to be closed */
-                    //    delete schema;  /* TODO: Was changes in current schema saved? */
-                    //schema = new Schema(name);
-
                     if (Schema::create(name) == -1)
                         std::cerr << "Couldn't create schema!\n";
                     else
