@@ -29,9 +29,6 @@ int main(void) {
 
         /* TODO: This works on a particular schema, but should we mutate a global schema? */
         sql.execute(schema);
-
-        if (schema)
-            std::cout << schema->get_name() << std::endl;
     }
 
     return EXIT_SUCCESS;

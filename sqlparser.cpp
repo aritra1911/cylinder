@@ -41,6 +41,18 @@ int SQL::parse(const std::string& _query) {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;
         }
+    } else if (head(query) == "DROP") {
+        query = tail(query);  // Chop off head, we won't need that anymore!
+        this->statement = DROP;
+
+        if (head(query) == "SCHEMA") {
+            this->substatement = SCHEMA;
+            this->name = tail(query);
+
+        } else {
+            std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
+            return -1;
+        }
     } else {
         std::cerr << "Couldn't parse query\n";
         return -1;
@@ -71,6 +83,22 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                      * should never be reached. */
                     std::cerr << "You shouldn't be seeing this!\n";
 
+            }
+            break;
+
+        case DROP:
+            switch (substatement) {
+                case SCHEMA:
+                    if (Schema::drop(name) == -1)
+                        std::cerr << "Couldn't drop schema!\n";
+                    else
+                        std::cout << "Schema dropped!\n";
+                    break;
+
+                default:
+                    /* If the parse() works correctly, and provided no break statements were missed above, this case
+                     * should never be reached. */
+                    std::cerr << "You shouldn't be seeing this!\n";
             }
             break;
 
