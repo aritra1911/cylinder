@@ -53,6 +53,18 @@ int SQL::parse(const std::string& _query) {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;
         }
+    } else if (head(query) == "SELECT") {
+        query = tail(query);  // Chop off head, we won't need that anymore!
+        this->statement = SELECT;
+
+        if (head(query) == "SCHEMA") {
+            this->substatement = SCHEMA;
+            this->name = tail(query);
+
+        } else {
+            std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
+            return -1;
+        }
     } else {
         std::cerr << "Couldn't parse query\n";
         return -1;
@@ -96,6 +108,31 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                         std::cerr << "Couldn't drop schema!\n";
                     else
                         std::cout << "Schema dropped!\n";
+                    break;
+
+                default:
+                    /* If the parse() works correctly, and provided no break statements were missed above, this case
+                     * should never be reached. */
+                    std::cerr << "You shouldn't be seeing this!\n";
+            }
+            break;
+
+        case SELECT:
+            switch (substatement) {
+                case SCHEMA:
+                    /* If we've selected another schema that's not pointed by `schema' */
+                    if (schema && schema->get_name() != name) {
+                        delete schema;
+                        schema = nullptr;  /* This should happen automatically after a delete */
+                    }
+
+                    if (!schema)
+                        schema = new Schema(name);
+
+                    if (schema->select() == -1)
+                        std::cerr << "Couldn't select schema!\n";
+                    else
+                        std::cout << "Schema selected.\n";
                     break;
 
                 default:

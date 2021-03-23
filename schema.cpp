@@ -46,6 +46,26 @@ int Schema::create(const std::string& name) {
     return 0;
 }
 
+int Schema::select() {
+    /* if already selected, don't repeat */
+    if (file.is_open()) {
+        std::cerr << "Schema is already selected!\n";
+        return -1;
+    }
+
+    /* Check if it exists */
+    std::ifstream f(SCHEMA_FILE(this->name));
+    if (!f.is_open()) {
+        std::cerr << "Schema doesn't exist!\n";
+        return -1;
+    }
+    f.close();  /* Close if opened */
+
+    file.open(SCHEMA_FILE(this->name), std::ios::in | std::ios::out | std::ios::app);
+
+    return 0;
+}
+
 int Schema::drop(void) {
     /* Deletes the file for the schema (this->name) */
 
@@ -81,9 +101,6 @@ int Schema::drop(const std::string& name) {
 }
 
 Schema::~Schema(void) {
-    std::cout << "Schema destructor called\n";
-    if (file.is_open()) {
-        std::cout << "File closed\n";
+    if (file.is_open())
         file.close();
-    }
 }

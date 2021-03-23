@@ -31,5 +31,8 @@ int main(void) {
         sql.execute(schema);
     }
 
+    if (schema)  /* Make sure we're closing schema files */
+        delete schema;
+
     return EXIT_SUCCESS;
 }
