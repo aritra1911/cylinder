@@ -10,13 +10,22 @@ std::string Schema::get_name(void) {
     return this->name;
 }
 
-/* TODO: We should not have to instantiate in order to create a schema. It's just a file. */
 int Schema::create(void) {
+    /* Creates file for the schema (this->name) */
+
+    /* If schema has an open file, close it */
+    if (file.is_open())
+        file.close();
+
+    return this->create(this->name);
+}
+
+int Schema::create(const std::string& name) {
     /* Note: This function only creates the schema, but doesn't load it. */
     std::fstream f;
 
     /* Check if schema already exists */
-    f.open(DATABASE_DIR + this->name, std::ios::in);
+    f.open(SCHEMA_FILE(name), std::ios::in);
     if (f.is_open()) {
         /* We were able to open the schema, therefore it exists. So return error. */
         std::cerr << "Schema already exists!\n";
@@ -25,7 +34,7 @@ int Schema::create(void) {
     }
 
     /* Now that we know for sure that it doesn't exist, so create it */
-    f.open(DATABASE_DIR + this->name, std::ios::out);
+    f.open(SCHEMA_FILE(name), std::ios::out);
     if (!f.is_open()) {
         /* Something went wrong, maybe file create permissions? */
         std::cerr << "Couldn't create schema\n";
@@ -39,6 +48,10 @@ int Schema::create(void) {
 
 int Schema::drop(void) {
     /* Deletes the file for the schema (this->name) */
+
+    /* If schema has open file, close it */
+    if (file.is_open())
+        file.close();
 
     return this->drop(this->name);
 

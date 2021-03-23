@@ -3,7 +3,7 @@
 
 # include <fstream>
 
-# define DATABASE_DIR "db/"
+# define DATABASE_DIR "db/"  /* TODO: Create if doesn't exist */
 # define SCHEMA_FILE(x) (DATABASE_DIR + x)
 
 class Schema {
@@ -13,8 +13,9 @@ class Schema {
     public:
     Schema(const std::string&);
     std::string get_name(void);
-    int create(void);
-    int drop(void);
+    int create(void);  // Create self
+    int drop(void);  // Drop self
+    static int create(const std::string&);
     static int drop(const std::string&);
     ~Schema(void);
 };
