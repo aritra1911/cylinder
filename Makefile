@@ -3,7 +3,7 @@ LIBS =
 SRC = main.cpp schema.cpp sqlparser.cpp
 OBJ = main.o schema.o sqlparser.o
 
-.PHONY := clean
+.PHONY: clean
 
 cylinder: $(OBJ)
 	$(CXX) $(LIBS) -o $@ $^
