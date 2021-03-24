@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <vector>
 #include "sqlparser.hpp"
 #include "schema.hpp"
 
@@ -22,6 +24,41 @@ std::string tail(const std::string& s) {
     return "";
 }
 
+std::string strip_parenthesis(const std::string& s) {
+    /* Gets text within parenthesis */
+
+    size_t pos = s.find('(');  // We're not assuming that `s' starts with '(', but it should!
+    size_t qos = s.find(')');  // We're not assuming that `s' ends with ')', but it should!
+
+    if (pos == std::string::npos && qos == std::string::npos)
+        /* We didn't find any begining or ending parenthesis */
+        return s;
+
+    if (pos == std::string::npos)
+        /* We found an ending parenthesis */
+        return s.substr(0, qos);
+
+    if (qos == std::string::npos)
+        /* We found a starting parenthesis */
+        return s.substr(pos + 1);
+
+    /* We found both starting and ending parentheses */
+    return s.substr(pos + 1, qos - pos - 1);
+}
+
+std::vector<std::string> split(const std::string& str, const char& delim) {
+    /* Splits and vectorizes a list of `delim' separated string of items */
+
+    std::istringstream input(str);
+    std::vector<std::string> retvec;
+    std::string item;
+
+    while (getline(input, item, delim))
+        retvec.push_back(item);
+
+    return retvec;
+}
+
 int SQL::parse(const std::string& _query) {
     std::string query = _query;  // Create a copy so we don't modify the original one
 
@@ -35,8 +72,13 @@ int SQL::parse(const std::string& _query) {
             this->name = tail(query);
                 /* TODO: SQL statements may end with a semi-colon which is not a part of the name itself. */
 
-        //} else if (head(query) == "TABLE") {
-        //    /* TODO */
+        } else if (head(query) == "TABLE") {
+            query = tail(query);  // Chop off head, we won't need that anymore!
+            this->substatement = TABLE;
+            this->name = head(query);
+            query = tail(query);  // Chop off head, we won't need that anymore!
+            /* Here query is now a list of columns and their datatypes separated by comma and enclosed in parenthsis */
+            /* TODO: We need a function that interprets next the list of columns and datatypes enclosed in parenthesis */
         } else {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;

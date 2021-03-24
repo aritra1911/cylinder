@@ -1,6 +1,8 @@
 #ifndef _SQLPARSER_HPP
 # define _SQLPARSER_HPP
 
+# include <string>
+# include <vector>
 # include "schema.hpp"
 
 enum Clause {
@@ -24,10 +26,22 @@ enum Clause {
     WHERE,
 };
 
+enum DataType {
+    NUMBER,  /* Int, TODO: Include Float */
+    VARCHAR,  /* std::string, Don't think(TODO) too much right now */
+};
+
+struct Column {
+    std::string name;
+    DataType type;
+    /* TODO: Add constraints */
+};
+
 struct SQL {
     Clause statement;
     Clause substatement;
     std::string name;
+    std::vector<Column> table_columns;
 
     int parse(const std::string&);
     void execute(Schema*&);
@@ -37,5 +51,8 @@ struct SQL {
  * functions do as their name implies */
 std::string head(const std::string&);
 std::string tail(const std::string&);
+
+std::string strip_parenthesis(const std::string&);
+std::vector<std::string> split(const std::string&);
 
 #endif  /* _SQLPARSER_HPP */
