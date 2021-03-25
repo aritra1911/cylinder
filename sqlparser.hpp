@@ -35,13 +35,15 @@ struct Column {
     std::string name;
     DataType type;
     /* TODO: Add constraints */
+
+    Column(const std::string&);
 };
 
 struct SQL {
     Clause statement;
     Clause substatement;
     std::string name;
-    std::vector<Column> table_columns;
+    std::vector<Column> columns;
 
     int parse(const std::string&);
     void execute(Schema*&);

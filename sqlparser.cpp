@@ -59,6 +59,19 @@ std::vector<std::string> split(const std::string& str, const char& delim) {
     return retvec;
 }
 
+Column::Column(const std::string& col_str) {
+    /* `col_str' is a space separated list of column_name, data_type and a vaeribale number of constraints */
+    /* TODO: Currently no constraints have been implemented so it should be ``col_name datatype'' for now */
+
+    std::vector<std::string> col_vec = split(col_str, ' ');  /* TODO: There are other whitespace characters */
+
+    name = col_vec[0];
+    if (col_vec[1] == "NUMBER")
+        type = NUMBER;
+    else
+        type = VARCHAR;
+}
+
 int SQL::parse(const std::string& _query) {
     std::string query = _query;  // Create a copy so we don't modify the original one
 
@@ -76,9 +89,16 @@ int SQL::parse(const std::string& _query) {
             query = tail(query);  // Chop off head, we won't need that anymore!
             this->substatement = TABLE;
             this->name = head(query);
-            query = tail(query);  // Chop off head, we won't need that anymore!
-            /* Here query is now a list of columns and their datatypes separated by comma and enclosed in parenthsis */
-            /* TODO: We need a function that interprets next the list of columns and datatypes enclosed in parenthesis */
+
+            /* Here tail(query) is now a list of columns and their datatypes separated by comma and enclosed in
+             * parenthesis */
+
+            columns.clear();
+            for (std::string& col_str : split(strip_parenthesis(tail(query)), ','))
+                columns.push_back(Column(col_str));
+
+            /* And that's boyz & gals is how you parse a CREATE TABLE query */
+
         } else {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;
