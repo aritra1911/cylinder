@@ -11,11 +11,11 @@ class Schema {
     std::fstream file;
 
     public:
+    /* Exceptions */
+    class DoesntExistException { };
+
     Schema(const std::string&);
     std::string get_name(void);
-    int create(void);  // Create self
-    int select(void);
-    int drop(void);  // Drop self
     static int create(const std::string&);
     static int drop(const std::string&);
     ~Schema(void);

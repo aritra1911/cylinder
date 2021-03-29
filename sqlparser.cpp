@@ -179,17 +179,21 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                 case SCHEMA:
                     /* If we've selected another schema that's not pointed by `schema' */
                     if (schema && schema->get_name() != name) {
-                        delete schema;
-                        schema = nullptr;  /* This should happen automatically after a delete */
+                        delete schema;  /* Schema's desctructor is called and it safely closes the file */
+                        schema = nullptr;
                     }
 
-                    if (!schema)
-                        schema = new Schema(name);
+                    if (!schema) {
+                        try {
+                            schema = new Schema(name);
 
-                    if (schema->select() == -1)
-                        std::cerr << "Couldn't select schema!\n";
-                    else
-                        std::cout << "Schema selected.\n";
+                        } catch(Schema::DoesntExistException) {
+                            std::cerr << "Schema doesn't exist!\n";
+                            break;
+                        }
+                    }
+
+                    std::cout << "Schema selected.\n";
                     break;
 
                 default:

@@ -4,20 +4,21 @@
 #include <cstring>
 #include "schema.hpp"
 
-Schema::Schema(const std::string& name) : name(name) { }
+Schema::Schema(const std::string& name) : name(name) {
+    /* Instantiating a Schema, selects it. */
+
+    /* Check if it exists */
+    std::ifstream f(SCHEMA_FILE(this->name));
+    if (!f.is_open())
+        throw DoesntExistException();
+
+    f.close();  /* Close if opened */
+
+    file.open(SCHEMA_FILE(this->name), std::ios::in | std::ios::out | std::ios::app);
+}
 
 std::string Schema::get_name(void) {
     return this->name;
-}
-
-int Schema::create(void) {
-    /* Creates file for the schema (this->name) */
-
-    /* If schema has an open file, close it */
-    if (file.is_open())
-        file.close();
-
-    return this->create(this->name);
 }
 
 int Schema::create(const std::string& name) {
@@ -44,39 +45,6 @@ int Schema::create(const std::string& name) {
     /* Things went as intended. Now close the open output file and return. */
     f.close();
     return 0;
-}
-
-int Schema::select() {
-    /* if already selected, don't repeat */
-    if (file.is_open()) {
-        std::cerr << "Schema is already selected!\n";
-        return -1;
-    }
-
-    /* Check if it exists */
-    std::ifstream f(SCHEMA_FILE(this->name));
-    if (!f.is_open()) {
-        std::cerr << "Schema doesn't exist!\n";
-        return -1;
-    }
-    f.close();  /* Close if opened */
-
-    file.open(SCHEMA_FILE(this->name), std::ios::in | std::ios::out | std::ios::app);
-
-    return 0;
-}
-
-int Schema::drop(void) {
-    /* Deletes the file for the schema (this->name) */
-
-    /* If schema has open file, close it */
-    if (file.is_open())
-        file.close();
-
-    return this->drop(this->name);
-
-    /* if object is pointed, it's a good idea to delete that pointer now, thereby calling the destructor. Also a
-     * pointer is easier to check if the Schema is open or not. A null pointer signifies that it's not. */
 }
 
 int Schema::drop(const std::string& name) {
