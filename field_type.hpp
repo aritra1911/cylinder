@@ -18,8 +18,8 @@ enum FieldType {
  */
 
 struct AbstractField {
-    std::string name;
     FieldType type;
+    std::string name;
 
     AbstractField(const FieldType&, const std::string&);
     virtual ~AbstractField() = 0;
@@ -29,9 +29,11 @@ template<class T>
 struct Field : AbstractField {
     T value;
 
-    Field(const FieldType& type, const std::string& name) : AbstractField(type, name) { }
+    Field(const FieldType&, const std::string&);
 
-    Field(const FieldType& type, const std::string& name, const T& value) : AbstractField(type, name), value(value) { }
+    Field(const FieldType&, const std::string&, const T&);
 };
+
+# include "field_type.tpp"
 
 #endif
