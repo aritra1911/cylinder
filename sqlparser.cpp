@@ -147,7 +147,12 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                     break;
 
                 case TABLE:
-                    /* TODO */
+                    if (!schema) {
+                        std::cerr << "No Schema selected!\n";
+                        break;
+                    }
+
+                    //schema->create_table(name, columns);  /* TODO */
                     break;
 
                 default:
