@@ -3,6 +3,7 @@
 #include <vector>
 #include "sqlparser.hpp"
 #include "schema.hpp"
+#include "field_type.hpp"
 
 std::string head(const std::string& s) {
     size_t pos = s.find(' ');  // TODO: Include all whitespaces
@@ -146,14 +147,41 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                         std::cout << "Schema created.\n";
                     break;
 
-                case TABLE:
+                case TABLE: {
                     if (!schema) {
                         std::cerr << "No Schema selected!\n";
                         break;
                     }
 
-                    //schema->create_table(name, columns);  /* TODO */
-                    break;
+                    /* Create an array of Fields that'll be passed to schema->create_table() */
+                    AbstractField** fields = new AbstractField*[columns.size()];
+
+                    /* Copy `columns' vector into `fields' array as we now already know the number of columns there are,
+                     * so instead of passing a vector<Column>, we'll pass an array of `Field<int>'. Now arises two
+                     * questions:
+                     *
+                     * * Why are we constructing an array again? Just pass the vector and call it done!
+                     * > Well, if you see what kind of vector it is, you'll notice that it's a vector of `Column'
+                     *   datatype, and `Column' is partial to this module. It helps in parsing and that's all. There's
+                     *   no need of making it generic since we already have the `Field' data structure from
+                     *   `field_type.hpp' which is generic enough.
+                     *
+                     * * Why Field<int>?
+                     * > Now that's a hack since here we don't really care about what type of data the field is holding
+                     *   since it'll be holding none. I could've just used objects of AbstractField, but it's abstract.
+                     */
+                    size_t i = 0;
+                    for (Column& col : columns)
+                        fields[i++] = new Field<int>(col.type, col.name);
+
+                    schema->create_table(name, fields, i);
+
+                    /* Clean up */
+                    for (i=0; i<columns.size(); i++)
+                        delete fields[i];
+                    columns.clear();
+
+                }   break;
 
                 default:
                     /* If the parse() works correctly, and provided no break statements were missed above, this case

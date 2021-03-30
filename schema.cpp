@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <cstring>
 #include "schema.hpp"
+#include "field_type.hpp"
 
 Schema::Schema(const std::string& name) : name(name) {
     /* Instantiating a Schema, selects it. */
@@ -14,7 +15,7 @@ Schema::Schema(const std::string& name) : name(name) {
 
     f.close();  /* Close if opened */
 
-    file.open(SCHEMA_FILE(this->name), std::ios::in | std::ios::out | std::ios::app);
+    file.open(SCHEMA_FILE(this->name), std::ios::in | std::ios::out );//| std::ios::app);
 }
 
 std::string Schema::get_name(void) {
@@ -66,6 +67,22 @@ int Schema::drop(const std::string& name) {
     }
 
     return 0;
+}
+
+void Schema::create_table(const std::string& name, AbstractField** fields, const size_t& num_fields) {
+    /* Now we have to serialize the table header in the file. It should be something like this:
+     *
+     * Table_name\n
+     * <DATA_TYPE><Field_name><DATA_TYPE><Field_name> ...num_field times... <DATA_TYPE><Field_name>\n
+     * ...Records follow here...\n
+     * \n
+     * Table_name\n
+     * ...same as above...
+     */
+    file << name << std::endl;
+    for (size_t i=0; i<num_fields; i++)
+        file << fields[i]->type << fields[i]->name;
+    file << std::endl;
 }
 
 Schema::~Schema(void) {

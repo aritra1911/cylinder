@@ -26,14 +26,9 @@ enum Clause {
     WHERE,
 };
 
-enum DataType {
-    NUMBER,  /* Int, TODO: Include Float */
-    VARCHAR,  /* std::string, Don't think(TODO) too much right now */
-};
-
 struct Column {
     std::string name;
-    DataType type;
+    FieldType type;
     /* TODO: Add constraints */
 
     Column(const std::string&);

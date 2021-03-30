@@ -2,6 +2,7 @@
 # define _SCHEMA_HPP
 
 # include <fstream>
+# include "field_type.hpp"
 
 # define DATABASE_DIR "db/"  /* TODO: Create if doesn't exist */
 # define SCHEMA_FILE(x) (DATABASE_DIR + x)
@@ -18,6 +19,7 @@ class Schema {
     std::string get_name(void);
     static int create(const std::string&);
     static int drop(const std::string&);
+    void create_table(const std::string&, AbstractField**, const size_t&);
     ~Schema(void);
 };
 
