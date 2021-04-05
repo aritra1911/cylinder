@@ -1,4 +1,4 @@
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++11
+CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
 LIBS =
 SRC = main.cpp schema.cpp sqlparser.cpp field_type.cpp
 OBJ = main.o schema.o sqlparser.o field_type.o

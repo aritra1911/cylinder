@@ -18,7 +18,7 @@ class Schema {
     Schema(const std::string&);
     std::string get_name(void);
     static int create(const std::string&);
-    static int drop(const std::string&);
+    static void drop( const std::string& );
     void create_table(const std::string&, AbstractField**, const size_t&);
     ~Schema(void);
 };

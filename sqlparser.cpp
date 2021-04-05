@@ -187,17 +187,21 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                     /* If the parse() works correctly, and provided no break statements were missed above, this case
                      * should never be reached. */
                     std::cerr << "You shouldn't be seeing this!\n";
-
             }
             break;
 
         case DROP:
-            switch (substatement) {
+            switch ( substatement ) {
                 case SCHEMA:
-                    if (Schema::drop(name) == -1)
-                        std::cerr << "Couldn't drop schema!\n";
-                    else
-                        std::cout << "Schema dropped!\n";
+                    try {
+                        Schema::drop( name );
+
+                    } catch ( Schema::DoesntExistException ) {
+                        std::cerr << "Schema doesn't exist!\n";
+                        break;
+                    }
+
+                    std::cout << "Schema dropped!\n";
                     break;
 
                 default:

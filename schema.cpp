@@ -1,7 +1,5 @@
 #include <iostream>
-#include <cstdio>
-#include <cerrno>
-#include <cstring>
+#include <filesystem>
 #include "schema.hpp"
 #include "field_type.hpp"
 
@@ -48,25 +46,13 @@ int Schema::create(const std::string& name) {
     return 0;
 }
 
-int Schema::drop(const std::string& name) {
+void Schema::drop( const std::string& name ) {
     /* Is able to delete file for any schema given a name */
 
-    /* Try to open schema file and if we're not successful, then it doesn't exist. */
-    std::ifstream f(SCHEMA_FILE(name));
-    if (!f.is_open()) {
-        std::cerr << "Schema doesn't exist\n";
-        return -1;
-    }
-    f.close();  /* It opened, so close it */
+    std::filesystem::path p = SCHEMA_FILE( name );
 
-    errno = 0;  /* Make sure `errno' is reset */
-    if (std::remove(SCHEMA_FILE(name).c_str()) == -1) {
-        std::cerr << SCHEMA_FILE(name) << ": " << std::strerror(errno);
-        errno = 0;
-        return -1;
-    }
-
-    return 0;
+    if ( !std::filesystem::remove( p ) )
+        throw DoesntExistException();
 }
 
 void Schema::create_table(const std::string& name, AbstractField** fields, const size_t& num_fields) {
