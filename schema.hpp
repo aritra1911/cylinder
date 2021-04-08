@@ -20,6 +20,7 @@ class Schema {
     static int create(const std::string&);
     static void drop( const std::string& );
     void create_table(const std::string&, AbstractField**, const size_t&);
+    void describe( const std::string& );
     ~Schema(void);
 };
 

@@ -128,6 +128,10 @@ int SQL::parse(const std::string& _query) {
             std::cerr << "What's " << head(query) << "? - rest of the line ignored!\n";
             return -1;
         }
+    } else if (head(query).substr(0, 4) == "DESC") {
+        this->name = tail(query);
+        this->statement = DESCRIBE;
+
     } else {
         std::cerr << "Couldn't parse query\n";
         return -1;
@@ -238,6 +242,10 @@ void SQL::execute(Schema*& schema) {  /* TODO: Should `schema' be mutable? */
                      * should never be reached. */
                     std::cerr << "You shouldn't be seeing this!\n";
             }
+            break;
+
+        case DESCRIBE:
+            schema->describe(this->name);
             break;
 
         default:
