@@ -6,19 +6,33 @@ const std::string PROMPT = "SQL> ";
 
 int main(void) {
     std::string query;
+    Schema* schema = nullptr;
+    SQL sql;
 
-    std::cout << PROMPT;
-    std::getline(std::cin, query);
-
-    do {
-        Schema temp_schema = parse(query);
-
-        std::cout << "Schema Name : \"" << temp_schema.get_name() << "\"\n";
-
+    while (1) {
         std::cout << PROMPT;
         std::getline(std::cin, query);
 
-    } while (query != "EXIT" && query != "QUIT");
+        /* EXIT on EOF (aka ^D) */
+        if (std::cin.eof()) {
+            /* Hitting ^D exits abruptly, so here we print nicely, the cause of exit i.e. EOF along with a newline so it
+             * doesn't mess up shell prompts and then gracefully exit */
+            std::cout << "EOF\n";
+            break;
+        }
+
+        if (query == "EXIT" || query == "QUIT")
+            break;
+
+        if (sql.parse(query) == -1)
+            continue;  /* Bad query */
+
+        /* TODO: This works on a particular schema, but should we mutate a global schema? */
+        sql.execute(schema);
+    }
+
+    if (schema)  /* Make sure we're closing schema files */
+        delete schema;
 
     return EXIT_SUCCESS;
 }
